@@ -16,23 +16,50 @@ and examples.
 Modules
 -------
 
+* `ADFSlib.py`
+  Defines structures for many of the features of ADFS floppy disk formats.
+  Used mainly for reading existing disk images.
 * `diskutils.py`
   Defines abstractions such as files and directories with features that are
   common to many of the Acorn filing systems.
 * `makedfs.py`
   Defines structures such as disks and catalogues that are specific to DFS.
+  Used mainly for writing new disk images.
+* `UEFfile.py`
+  Contains an abstraction of a UEF file that can be used to read and modify
+  existing files, and write new ones.
 
 
 Tools
 -----
 
-* `make_dfs_disk.py`
-  Creates a DFS disk image with a given name, containing the files specified
-  as arguments on the command line.
+* `ADF2INF.py`
+  Unpacks files from ADFS floppy disk images to the local filing system with
+  associated `.inf` meta-data files.
+* `INF2UEF.py`
+  Reads collections of files on the local filing system with associated `.inf`
+  meta-data files and packages them in new UEF files.
 * `SSD2UEF.py`
   Creates a UEF file containing the files found within a given SSD disk image.
   This uses the `UEFfile` module which is not currently included in this
   repository.
+* `T2INF.py`
+  Extracts files from Slogger T2* files to the local filing system with
+  associated `.inf` meta-data files.
+* `T2UEF.py`
+  Extracts files from Slogger T2* files and stores them in new UEF files for
+  use with emulators or audio playback tools.
+* `UEF2INF.py`
+  Extracts files from UEF files to the local filing system with associated
+  `.inf` meta-data files.
+
+
+Examples
+--------
+
+* `make_dfs_disk.py`
+  Creates a DFS disk image with a given name, containing the files specified
+  as arguments on the command line.
 
 
 Authors
