@@ -1,9 +1,20 @@
-# DiskUtils
+Acorn Format Tools
+==================
 
-This repository contains Python modules and tools for manipulating DFS and
-ADFS disk images for the Acorn 8-bit range of computers.
+This repository contains Python modules and tools for manipulating different
+files and formats used by Acorn 8-bit range of computers, such as SSD and DSD
+files containing DFS and ADFS format disk images, and UEF files containing
+cassette data.
 
-## Modules
+Tools for converting data between formats and examples showing how to use the
+modules are also provided.
+
+The aim is to provide Python 2 and Python 3 versions of all modules, tools
+and examples.
+
+
+Modules
+-------
 
 * diskutils.py
   Defines abstractions such as files and directories with features that are
@@ -11,11 +22,23 @@ ADFS disk images for the Acorn 8-bit range of computers.
 * makedfs.py
   Defines structures such as disks and catalogues that are specific to DFS.
 
-## Authors
+
+Tools
+-----
+
+* make_dfs_disk.py
+  Creates a DFS disk image with a given name, containing the files specified
+  as arguments on the command line.
+
+
+Authors
+-------
 
 * David Boddie <david@boddie.org.uk>
 
-## License
+License
+-------
+
 
 Both the assembly language routines and the Python modules and tools are
 licensed under the GNU General Public License version 3 or later:
