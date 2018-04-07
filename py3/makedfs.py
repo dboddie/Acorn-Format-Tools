@@ -16,8 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 __author__ = "David Boddie <david@boddie.org.uk>"
-__date__ = "2014-04-22"
-__version__ = "0.1"
+__date__ = "2018-04-07"
+__version__ = "0.2"
 __license__ = "GNU General Public License (version 3 or later)"
 
 from io import StringIO
@@ -29,11 +29,14 @@ class Catalogue(Utilities):
     
         self.file = file
         self.sector_size = 256
+        self.track_size = 10 * self.sector_size
+        self.interleaved = False
         
         # The free space map initially contains all the space after the
         # catalogue.
         self.free_space = [(2, 798)]
         self.sectors = 800
+        self.tracks = self.sectors // 10
         self.disk_cycle = 0
         self.boot_option = 0
     
@@ -45,11 +48,21 @@ class Catalogue(Utilities):
     
     def read(self):
     
-        disk_title = self._read(0, 8) + self._read(0x100, 4)
-        self.disk_cycle = self._read_unsigned_byte(self._read(0x104, 1))
-        last_entry = self._read_unsigned_byte(self._read(0x105, 1))
-        extra = self._read_unsigned_byte(self._read(0x106, 1))
-        sectors = self._read_unsigned_byte(self._read(0x107, 1))
+        disk_title, files = self.read_catalogue(0)
+        
+        if self.interleaved:
+            other_title, more_files = self.read_catalogue(self.track_size)
+            files += more_files
+        
+        return disk_title, files
+    
+    def read_catalogue(self, offset):
+    
+        disk_title = self._read(offset, 8) + self._read(offset + 0x100, 4)
+        self.disk_cycle = self._read_unsigned_byte(self._read(offset + 0x104, 1))
+        last_entry = self._read_unsigned_byte(self._read(offset + 0x105, 1))
+        extra = self._read_unsigned_byte(self._read(offset + 0x106, 1))
+        sectors = self._read_unsigned_byte(self._read(offset + 0x107, 1))
         self.sectors = sectors | ((extra & 0x03) << 8)
         self.boot_option = (extra & 0x30) >> 4
         
@@ -58,20 +71,20 @@ class Catalogue(Utilities):
         
         while p <= last_entry:
         
-            name = self._read(p, 7)
+            name = self._read(offset + p, 7)
             if name[0] == "\x00":
                 break
             
             name = name.strip()
-            extra = self._read_unsigned_byte(self._read(p + 7))
+            extra = self._read_unsigned_byte(self._read(offset + p + 7))
             prefix = bytes([extra & 0x7f])
             locked = (extra & 0x80) != 0
             
-            load = self._read_unsigned_half_word(self._read(0x100 + p, 2))
-            exec_ = self._read_unsigned_half_word(self._read(0x100 + p + 2, 2))
-            length = self._read_unsigned_half_word(self._read(0x100 + p + 4, 2))
+            load = self._read_unsigned_half_word(self._read(offset + 0x100 + p, 2))
+            exec_ = self._read_unsigned_half_word(self._read(offset + 0x100 + p + 2, 2))
+            length = self._read_unsigned_half_word(self._read(offset + 0x100 + p + 4, 2))
             
-            extra = self._read_unsigned_byte(self._read(0x100 + p + 6))
+            extra = self._read_unsigned_byte(self._read(offset + 0x100 + p + 6))
             load = load | ((extra & 0x0c) << 14)
             length = length | ((extra & 0x30) << 12)
             exec_ = exec_ | ((extra & 0xc0) << 10)
@@ -81,13 +94,25 @@ class Catalogue(Utilities):
             if exec_ & 0x30000 == 0x30000:
                 exec_ = exec_ | 0xfc0000
             
-            file_start_sector = self._read_unsigned_byte(self._read(0x100 + p + 7))
+            file_start_sector = self._read_unsigned_byte(self._read(offset + 0x100 + p + 7))
             file_start_sector = file_start_sector | ((extra & 0x03) << 8)
             
-            data = self._read(file_start_sector * self.sector_size, length)
+            if not self.interleaved:
+                data = self._read(file_start_sector * self.sector_size, length)
+                disk_address = file_start_sector * self.sector_size
+            else:
+                data = ""
+                sector = file_start_sector
+                disk_address = self._disk_address(sector)
+                
+                while len(data) < length:
+                
+                    addr = offset + self._disk_address(sector)
+                    data += self._read(addr, min(self.sector_size, length - len(data)))
+                    sector += 1
             
             files.append(File(prefix + b"." + name, data, load, exec_, length, locked,
-                              file_start_sector * self.sector_size))
+                              disk_address))
             
             p += 8
         
@@ -169,6 +194,20 @@ class Catalogue(Utilities):
                 return sector * self.sector_size
         
         raise DiskError("Failed to find space for file: %s" % file.name)
+    
+    def _disk_address(self, sector):
+    
+        track = sector/10
+        addr = 0
+        
+        # Handle some .dsd files with interleaved tracks.
+        if track >= self.tracks:
+            track -= self.tracks
+            addr += self.track_size
+        
+        addr += (track * self.track_size * 2) + ((sector % 10) * self.sector_size)
+        
+        return addr
 
 
 class Disk:

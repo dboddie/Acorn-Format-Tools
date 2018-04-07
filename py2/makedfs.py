@@ -16,8 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 __author__ = "David Boddie <david@boddie.org.uk>"
-__date__ = "2014-04-22"
-__version__ = "0.1"
+__date__ = "2018-04-07"
+__version__ = "0.2"
 __license__ = "GNU General Public License (version 3 or later)"
 
 import StringIO
@@ -121,7 +121,7 @@ class Catalogue(Utilities):
     def write(self, disk_title, files):
     
         if len(files) > 31:
-            raise DiskError, "Too many entries to write."
+            raise DiskError("Too many entries to write.")
         
         disk_name = self._pad(self._safe(disk_title), 12, " ")
         self._write(0, disk_title[:8])
@@ -193,7 +193,7 @@ class Catalogue(Utilities):
                 
                 return sector * self.sector_size
         
-        raise DiskError, "Failed to find space for file: %s" % file.name
+        raise DiskError("Failed to find space for file: %s" % file.name)
     
     def _disk_address(self, sector):
     
