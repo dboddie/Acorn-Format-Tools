@@ -16,19 +16,23 @@ and examples.
 Modules
 -------
 
-* diskutils.py
+* `diskutils.py`
   Defines abstractions such as files and directories with features that are
   common to many of the Acorn filing systems.
-* makedfs.py
+* `makedfs.py`
   Defines structures such as disks and catalogues that are specific to DFS.
 
 
 Tools
 -----
 
-* make_dfs_disk.py
+* `make_dfs_disk.py`
   Creates a DFS disk image with a given name, containing the files specified
   as arguments on the command line.
+* `SSD2UEF.py`
+  Creates a UEF file containing the files found within a given SSD disk image.
+  This uses the `UEFfile` module which is not currently included in this
+  repository.
 
 
 Authors
