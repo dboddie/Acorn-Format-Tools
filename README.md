@@ -1,16 +1,16 @@
 Acorn Format Tools
 ==================
 
-This repository contains Python modules and tools for manipulating different
-files and formats used by Acorn 8-bit range of computers, such as SSD and DSD
-files containing DFS and ADFS format disk images, and UEF files containing
-cassette data.
+This repository contains libraries and tools for manipulating different files
+and formats used by Acorn 8-bit range of computers, such as SSD and DSD files
+containing DFS and ADFS format disk images, and UEF files containing cassette
+data.
 
 Tools for converting data between formats and examples showing how to use the
 modules are also provided.
 
-The aim is to provide Python 2 and Python 3 versions of all modules, tools
-and examples.
+The aim is to provide libraries, modules, tools and examples for a variety of
+programming languages, including Python 2 and Python 3.
 
 
 Modules
