@@ -16,8 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 __author__ = "David Boddie <david@boddie.org.uk>"
-__date__ = "2018-04-07"
-__version__ = "0.2"
+__date__ = "2019-02-24"
+__version__ = "0.3"
 __license__ = "GNU General Public License (version 3 or later)"
 
 import StringIO
