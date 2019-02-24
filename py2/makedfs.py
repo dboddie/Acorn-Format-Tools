@@ -164,8 +164,8 @@ class Catalogue(Utilities):
             
             extra = ((file_start_sector >> 8) & 0x03)
             extra = extra | ((load >> 14) & 0x0c)
-            extra = extra | ((exec_ >> 12) & 0x30)
-            extra = extra | ((length >> 10) & 0xc0)
+            extra = extra | ((length >> 12) & 0x30)
+            extra = extra | ((exec_ >> 10) & 0xc0)
             
             self._write(0x100 + p + 6, self._write_unsigned_byte(extra))
             self._write(0x100 + p + 7, self._write_unsigned_byte(file_start_sector & 0xff))
