@@ -218,5 +218,3 @@ class File:
             return time.localtime(centiseconds / 100.0)
         except ValueError:
             return ()
-
-
