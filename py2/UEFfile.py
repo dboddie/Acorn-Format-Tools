@@ -34,8 +34,8 @@ if sys.platform == 'RISCOS':
 else:
     suffix = '.'
 
-version = '0.21'
-date = '2013-03-03'
+version = '0.30'
+date = '2019-04-07'
     
     
 class UEFfile:
@@ -457,8 +457,8 @@ class UEFfile:
 
         # Try to cope with UEFs that contain junk data at the end of blocks.
         rest = block[a+19:][:258]
-        in_crc = crc(rest[:-2])
-        if in_crc != str2num(2, rest[-2:]):
+        in_crc = self.crc(rest[:-2])
+        if in_crc != self.str2num(2, rest[-2:]):
             print "Warning: block %x of file %s has mismatching CRC." % (
                 block_number, repr(name))
 
