@@ -16,8 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 __author__ = "David Boddie <david@boddie.org.uk>"
-__date__ = "2019-02-24"
-__version__ = "0.3"
+__date__ = "2020-03-29"
+__version__ = "0.4"
 __license__ = "GNU General Public License (version 3 or later)"
 
 import StringIO
@@ -137,7 +137,11 @@ class Catalogue(Utilities):
         self._write(0x106, self._write_unsigned_byte(extra))
         self._write(0x107, self._write_unsigned_byte(self.sectors & 0xff))
         
-        p = 8
+        # The catalogue contains files in descending disk address order, so
+        # allocate files starting at the end of the catalogue and work
+        # forwards. Note that the first file is at offset 8.
+        p = 8 * len(files)
+        
         for file in files:
         
             prefix, name = file.name.split(".")
@@ -170,7 +174,7 @@ class Catalogue(Utilities):
             self._write(0x100 + p + 6, self._write_unsigned_byte(extra))
             self._write(0x100 + p + 7, self._write_unsigned_byte(file_start_sector & 0xff))
             
-            p += 8
+            p -= 8
     
     def _find_space(self, file):
     
