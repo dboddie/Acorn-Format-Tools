@@ -1500,8 +1500,7 @@ class ADFSdisc(Utilities):
                                 ), 16
                             )
                     else:
-                    
-                        time_stamp = time.strftime("%H:%M:%S, %a %m %b %Y", time_stamp)
+                        time_stamp = time.strftime("%H:%M:%S, %a %d %b %Y", time_stamp)
                         print string.expandtabs(
                             "%s.%s\t%s\t%s\t%X" % (
                                 path, name, obj.filetype().upper(), time_stamp,
