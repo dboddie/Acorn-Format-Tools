@@ -20,7 +20,7 @@ __date__ = "2020-03-29"
 __version__ = "0.4"
 __license__ = "GNU General Public License (version 3 or later)"
 
-from io import StringIO
+from io import BytesIO
 from diskutils import Directory, DiskError, File, Utilities
 
 class Catalogue(Utilities):
@@ -101,7 +101,7 @@ class Catalogue(Utilities):
                 data = self._read(file_start_sector * self.sector_size, length)
                 disk_address = file_start_sector * self.sector_size
             else:
-                data = ""
+                data = b""
                 sector = file_start_sector
                 disk_address = self._disk_address(sector)
                 
@@ -123,7 +123,7 @@ class Catalogue(Utilities):
         if len(files) > 31:
             raise DiskError("Too many entries to write.")
         
-        disk_name = self._pad(self._safe(disk_title), 12, " ")
+        disk_name = self._pad(self._safe(disk_title), 12, b" ")
         self._write(0, disk_title[:8])
         self._write(0x100, disk_title[8:12])
         
@@ -144,8 +144,8 @@ class Catalogue(Utilities):
         
         for file in files:
         
-            prefix, name = file.name.split(".")
-            name = self._pad(name, 7, " ")
+            prefix, name = file.name.split(b".")
+            name = self._pad(name, 7, b" ")
             self._write(p, name)
             
             extra = ord(prefix)
@@ -163,13 +163,13 @@ class Catalogue(Utilities):
             self._write(0x100 + p + 4, self._write_unsigned_half_word(length & 0xffff))
             
             disk_address = self._find_space(file)
-            file_start_sector = disk_address / self.sector_size
+            file_start_sector = disk_address // self.sector_size
             self._write(disk_address, file.data)
             
             extra = ((file_start_sector >> 8) & 0x03)
             extra = extra | ((load >> 14) & 0x0c)
-            extra = extra | ((exec_ >> 12) & 0x30)
-            extra = extra | ((length >> 10) & 0xc0)
+            extra = extra | ((length >> 12) & 0x30)
+            extra = extra | ((exec_ >> 10) & 0xc0)
             
             self._write(0x100 + p + 6, self._write_unsigned_byte(extra))
             self._write(0x100 + p + 7, self._write_unsigned_byte(file_start_sector & 0xff))
@@ -181,7 +181,7 @@ class Catalogue(Utilities):
         for i in range(len(self.free_space)):
         
             sector, length = self.free_space[i]
-            file_length = file.length/self.sector_size
+            file_length = file.length//self.sector_size
             
             if file.length % self.sector_size != 0:
                 file_length += 1
@@ -201,7 +201,7 @@ class Catalogue(Utilities):
     
     def _disk_address(self, sector):
     
-        track = sector/10
+        track = sector//10
         addr = 0
         
         # Handle some .dsd files with interleaved tracks.
@@ -227,8 +227,8 @@ class Disk:
     def new(self):
     
         self.size = self.DiskSizes[self.format]
-        self.data = "\x00" * self.size
-        self.file = StringIO.StringIO(self.data)
+        self.data = bytes(self.size)
+        self.file = BytesIO(self.data)
     
     def open(self, file_object):
     

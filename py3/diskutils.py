@@ -103,21 +103,21 @@ class Utilities:
         while (n != 0) & (size > 0):
         
             if (n & 1)==1:
-                new = "1" + new
+                new = b"1" + new
             else:
-                new = "0" + new
+                new = b"0" + new
             
             n = n >> 1
             size = size - 1
         
         if size > 0:
-            new = ("0"*size) + new
+            new = (b"0"*size) + new
         
         return new
     
     def _safe(self, s, with_space = 0):
     
-        new = ""
+        new = []
         if with_space == 1:
             lower = 31
         else:
@@ -126,15 +126,14 @@ class Utilities:
         for c in s:
         
             if c >= 128:
-                i = c ^ 128
-                c = chr(i)
+                c = c ^ 128
             
             if c <= lower:
                 break
             
-            new = new + c
+            new.append(c)
         
-        return new
+        return bytes(new)
     
     def _pad(self, s, length, ch):
     
@@ -218,5 +217,3 @@ class File:
             return time.localtime(centiseconds / 100.0)
         except ValueError:
             return ()
-
-
